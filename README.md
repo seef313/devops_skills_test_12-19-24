@@ -48,7 +48,7 @@ devops_skills_test_12-19-24/Step_1-Solution-Puppet-WA/puppet-modules/
 
 
 
-## 3 : Setup and test 
+## 4 : Setup and test 
 - Deploy dockerfiles via docker compose 
 
 - Access both containers via shell 
