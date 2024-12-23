@@ -23,7 +23,7 @@ Ansible won’t suffice because we use Puppet in our environment.
 
 
 # The approach :
-With the flexibility of choice in implementation we can use utilize docker to simplify deployment and tight control of dependency. As well as apply solid concepts of infrastructure as code and version control. 
+With the flexibility of choice in implementation we can use utilize docker to simplify deployment and tight control of dependency. As well as apply solid concepts of infrastructure as code and version control. VMs are more stable but are very resource intensive so I wanted to avoid taking additional time setting them up but is possible if that is still a requirement later down the line. 
 
 Each of the puppet instances above will be represented as a docker image set up on an image of rocky 9. Upon contatiner spin-up both servers will have the ability to have ssh access from the admin. Upon initial access and test run of module a user will be created with necessary access privillages through puppet. Included Docker-comopose will handle container orchastration and management. 
 
