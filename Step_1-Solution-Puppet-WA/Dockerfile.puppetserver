@@ -1,0 +1,27 @@
+FROM rockylinux:9
+
+
+# Copy the Puppet module
+COPY ./puppet-modules/create_user /etc/puppetlabs/code/environments/production/modules/create_user
+
+# Install Puppetserver
+RUN dnf update -y && \
+    dnf install -y epel-release && \
+    curl -O https://yum.puppet.com/puppet-release-el-9.noarch.rpm && \
+    rpm -Uvh puppet-release-el-9.noarch.rpm && \
+    dnf install -y puppetserver openssh-server && \
+    mkdir -p /var/run/sshd && \
+    ssh-keygen -A && \
+    echo 'root:puppettest' | chpasswd
+
+
+
+
+# Add Puppetserver binary to PATH
+ENV PATH="/opt/puppetlabs/server/bin:${PATH}"
+
+EXPOSE 22
+
+
+# Run Puppetserver in the foreground
+CMD ["puppetserver", "foreground"]

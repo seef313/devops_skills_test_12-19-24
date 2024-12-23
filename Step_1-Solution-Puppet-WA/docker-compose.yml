@@ -1,0 +1,33 @@
+services:
+  puppetserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.puppetserver
+    container_name: puppetserver
+    networks:
+      puppet_network:
+        aliases:
+          - puppet  # Add alias for DNS resolution
+    ports:
+      - "8140:8140"
+      - "2222:22"
+
+  puppetagent:
+    build:
+      context: .
+      dockerfile: Dockerfile.puppetagent
+    container_name: puppetagent
+    depends_on:
+      - puppetserver
+    networks:
+      puppet_network:
+        aliases:
+          - puppetagent  # Optional alias
+    ports:
+      - "2223:22"
+      - "8140:8140"
+    entrypoint: ["/usr/sbin/sshd", "-D"]
+
+networks:
+  puppet_network:
+    driver: bridge

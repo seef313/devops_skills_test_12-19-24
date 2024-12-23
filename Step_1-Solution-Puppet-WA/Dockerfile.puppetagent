@@ -1,0 +1,23 @@
+FROM rockylinux:9
+
+COPY ./puppet-modules/create_user /etc/puppetlabs/code/environments/production/modules/create_user
+
+# Install Puppet agent, SSH server, and dependencies
+RUN dnf update -y && \
+    dnf install -y epel-release procps && \
+    curl -O https://yum.puppet.com/puppet-release-el-9.noarch.rpm && \
+    rpm -Uvh puppet-release-el-9.noarch.rpm && \
+    dnf install -y puppet-agent openssh-server openssh-clients && \
+    mkdir -p /var/run/sshd && \
+    ssh-keygen -A && \
+    echo 'root:puppettest' | chpasswd
+
+
+# Set the PATH for Puppet binaries
+ENV PATH="/opt/puppetlabs/bin:${PATH}"
+
+# Expose SSH port
+EXPOSE 22
+
+# Start SSH and Puppet agent using a simple script
+CMD ["/bin/bash", "-c", "/usr/sbin/sshd", "puppet agent --no-daemonize --onetime --waitforcert=60"]
