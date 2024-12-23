@@ -22,96 +22,87 @@ candidate used a different method. Substitution of a different configuration man
 Ansible won’t suffice because we use Puppet in our environment.
 
 
-# The approach:
-Without some additional context on how to go about implementing the servers and where (or if I should set up the VMs myself), I will include the bash / shell commands that will go along with each step. I can incorporate these steps into a demonstrable solution where each instance can be accessed if such is required. But I wasnt sure if I should implement this without knowing how it should be deployed. 
+# The approach :
+With the flexibility of choice in implementation we can use utilize docker to simplify deployment and tight control of dependency. As well as apply solid concepts of infrastructure as code and version control. 
+
+Each of the puppet instances above will be represented as a docker image set up on an image of rocky 9. Upon contatiner spin-up both servers will have the ability to have ssh access from the admin. Upon initial access and test run of module a user will be created with necessary access privillages through puppet. Included Docker-comopose will handle container orchastration and management. 
+
+# Requirements: 
+
+Docker
+
+## 1 - 2 : To set up a puppet server and agent :
+Please refer to DockerFiles under 
+devops_skills_test_12-19-24/Step_1-Solution-Puppet-WA/
+
+   - COPY field will pull necessary files for the task. This includes the modules needed for the puppet server, agent and ssh configs 
+   - RUN section will lay out order of operations and initial package setup and install 
+   - The rest of the parts of the DockerFile includes port information and exposure and other necessary commands for sercvices 
 
 
-## 1 : To set up a puppet server:
-``` 
-sudo dnf update -y 
-sudo dnf install -y https://yum.puppet.com/puppet7-release-el-9.noarch.rpm                     # To pull the latest image from a image repo 
-sudo dnf install -y puppetserver
-sudo systemctl enable --now puppetserver
-sudo hostnamectl set-hostname puppet.example.com
-sudo nano /etc/puppetlabs/puppet/puppet.conf
+## 3 : Custom module
+Please refer to files under 
+devops_skills_test_12-19-24/Step_1-Solution-Puppet-WA/puppet-modules/
 
-## Edit within: ##
-[main]
-dns_alt_names = puppet,puppet.example.com        # edit to match specs 
-
-sudo systemctl restart puppetserver 
-
-```
+  -  init.pp contains information about how to create a test user called "devuser" and also contains protected user information and public ssh key for access
 
 
-## 2 : To set up client 
-```
-sudo dnf install -y https://yum.puppet.com/puppet7-release-el-9.noarch.rpm
-sudo dnf install -y puppet-agent     #Package necessary to be set up as agent
-sudo hostnamectl set-hostname agent.example.com
 
-## Modify /etc/puppetlabs/puppet/puppet.conf ##
-[main]
-server = puppet.example.com
+## 3 : Setup and test 
+- Deploy dockerfiles via docker compose 
 
-sudo systemctl enable --now puppet # Starting and enabling the puppet agent 
-sudo puppetserver ca list
-sudo puppetserver ca sign --certname agent.example.com
+- Access both containers via shell 
 
-```
+  ```
+  docker exec -it puppetagent bash
+  docker exec -it puppetserver bash 
+  ```
+  
+- run the puppet agent on both containers
+  ```
+  puppet agent -t
+  ```
+- Should get some verification output: 
+  ```
+  docker exec -it puppetagent bash
+  [root@164cf4e930ea /]#   puppet agent -t
 
-## 3 : Create a custom module 
-```
-- Edit manifests/init.pp
-
-
-class create_user {
-  user { 'testuser':
-    ensure     => 'present',
-    managehome => true,
-    home       => '/home/testuser',
-    shell      => '/bin/bash',
-    password   => '<hashed_password>',
-  }
-
-  ssh_authorized_key { 'testuser_ssh_key':
-    ensure  => 'present',
-    user    => 'testuser',
-    type    => 'ssh-rsa',
-    key     => '<your_ssh_public_key>',
-  }
-
-  exec { 'add_to_wheel':
-    command => '/usr/sbin/usermod -aG wheel testuser',
-    unless  => 'groups testuser | grep -q wheel',
-  }
-}
+  Info: Using environment 'production'
+  Info: Retrieving pluginfacts
+  Info: Retrieving plugin
+  Notice: Requesting catalog from puppet:8140 (172.18.0.2)
+  Notice: Catalog compiled by fc9b0d5cd66a
+  Info: Caching catalog for 164cf4e930ea
+  Info: Applying configuration version '1734975345'
+  Notice: Applied catalog in 0.04 seconds
+  ```
 
 
-- Deploy module at: 
-
-/etc/puppetlabs/code/environments/production/modules/
-
-- Apply the module to both nodes
-
-node 'agent.example.com' {
-  include create_user
-}
-
-- Trigger a run: 
-puppet agent -t
-
-
-```
+- Apply the module to both nodes, Add test user and Trigger a run : 
+  ```
+  puppet agent --test  
+  ```
 
 
 ## Verification
-```
-- To ssh into testuser: 
-ssh testuser@agent.example.com
+
+- Accessing from local to puppet-server: 
+  ```
+  ssh -i "<ENTER KEY PATH>" devuser@localhost -p 2222
+  ```
+
+  ![alt text](image.png)
+- Accessing from local to puppet-AGENT: 
+  ```
+  ssh -i "<ENTER KEY PATH>" devuser@localhost -p 2223
+  ```
+  ![alt text](image-1.png)
+- Accessing puppet-server from agent: 
+  ```
+  docker exec -it puppetagent bash
+  ssh -i /home/test_ssh_key devuser@localhost -p 22
+  ```
+![alt text](image-2.png)
 
 
-- test sudo for testuser: 
-sudo -i 
-
-```
+![alt text](image-3.png)
