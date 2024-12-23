@@ -1,0 +1,58 @@
+
+# This is the sshd server system-wide configuration file.  See
+# sshd_config(5) for more information.
+
+# This sshd was compiled with PATH=/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin
+
+# The strategy used for options in the default sshd_config shipped with
+# OpenSSH is to specify options with their default value where
+# possible, but leave them commented.  Uncommented options override the
+# default value.
+
+# To modify the system-wide sshd configuration, create a  *.conf  file under
+#  /etc/ssh/sshd_config.d/  which will be automatically included below
+Include /etc/ssh/sshd_config.d/*.conf
+
+# If you want to change the port on a SELinux system, you have to tell
+# SELinux about this change.
+# semanage port -a -t ssh_port_t -p tcp #PORTNUMBER
+#
+#Port 22
+#AddressFamily any
+#ListenAddress 0.0.0.0
+#ListenAddress ::
+
+#HostKey /etc/ssh/ssh_host_rsa_key
+#HostKey /etc/ssh/ssh_host_ecdsa_key
+#HostKey /etc/ssh/ssh_host_ed25519_key
+
+# Ciphers and keying
+#RekeyLimit default none
+
+# Logging
+#SyslogFacility AUTH
+#LogLevel INFO
+
+# Authentication:
+
+#LoginGraceTime 2m
+#PermitRootLogin prohibit-password
+PermitRootLogin yes
+#StrictModes yes
+#MaxAuthTries 6
+#MaxSessions 10
+
+#PubkeyAuthentication yes
+
+# The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
+# but this is overridden so installations will only check .ssh/authorized_keys
+AuthorizedKeysFile      .ssh/authorized_keys
+
+#AuthorizedPrincipalsFile none
+
+#AuthorizedKeysCommand none
+#AuthorizedKeysCommandUser nobody
+
+# For this to work you will also need host keys in /etc/ssh/ssh_known_hosts
+#HostbasedAuthentication no
+"/etc/ssh/sshd_config" 131L, 3686B

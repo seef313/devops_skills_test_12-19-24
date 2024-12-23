@@ -15,8 +15,6 @@ RUN dnf update -y && \
     echo 'root:puppettest' | chpasswd
 
 
-
-
 # Add Puppetserver binary to PATH
 ENV PATH="/opt/puppetlabs/server/bin:${PATH}"
 

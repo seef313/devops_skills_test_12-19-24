@@ -1,6 +1,8 @@
 FROM rockylinux:9
 
 COPY ./puppet-modules/create_user /etc/puppetlabs/code/environments/production/modules/create_user
+COPY ./site.pp /etc/puppetlabs/code/environments/production/manifests/site.pp 
+COPY ./sshd_config /etc/ssh/
 
 # Install Puppet agent, SSH server, and dependencies
 RUN dnf update -y && \
