@@ -1,0 +1,35 @@
+services:
+  db01:
+    build:
+      context: .
+      dockerfile: Dockerfile.db01
+    container_name: test_db01
+    networks:
+      wordpress_network:
+        aliases:
+          - test_db01 
+    ports:
+    - "3306:3306"
+      
+
+  web01:
+    build:
+      context: .
+      dockerfile: Dockerfile.web01
+    container_name: test_web01
+    depends_on:
+      - test_db01
+    networks:
+      wordpress_network:
+        aliases:
+          - test_web01  
+    ports:
+      - "2222:22"
+      - "8443:443"
+      - "8080:80"
+      - "8140:8140"
+
+
+networks:
+  wordpress_network:
+    driver: bridge

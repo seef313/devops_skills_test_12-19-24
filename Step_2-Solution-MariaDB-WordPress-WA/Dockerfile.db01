@@ -1,0 +1,17 @@
+FROM mariadb:11
+
+
+
+# Install mysql and php
+RUN dnf update -y && \
+    dnf install -y epel-release && \
+    dnf install php php-cli php-mysqlnd php-fpm -y && \
+    mkdir -p /var/run/sshd  && \
+    /usr/libexec/mysqld --user=mysql &
+
+
+EXPOSE 3306
+
+
+# Run server 
+CMD ["/usr/libexec/mysqld", "--user=mysql"]

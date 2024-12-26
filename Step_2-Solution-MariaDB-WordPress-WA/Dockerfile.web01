@@ -1,0 +1,23 @@
+FROM rockylinux:9
+
+
+COPY ./wp-config.php /var/www/html/wordpress/
+COPY ./index.html /var/www/static.local/index.html
+COPY ./wordpress.conf /etc/httpd/conf.d/wordpress.conf
+COPY ./custom_sites.conf /etc/httpd/conf.d/custom_sites.conf 
+
+RUN dnf update -y && \
+    dnf install -y httpd php php-mysqlnd wget tar && \
+    mkdir -p /run/php-fpm && \
+    wget "https://wordpress.org/latest.tar.gz" && \
+    tar -xvzf latest.tar.gz && \
+    mv wordpress /var/www/html/ && \
+    chown -R apache:apache /var/www/html/wordpress && \
+    chmod -R 755 /var/www/html/wordpress && \
+    install php php-cli php-mysqlnd php-fpm -y 
+
+
+EXPOSE 22 443 80 8140 
+
+
+CMD ["/usr/sbin/httpd", "httpd -k start", "/usr/sbin/php-fpm"]
