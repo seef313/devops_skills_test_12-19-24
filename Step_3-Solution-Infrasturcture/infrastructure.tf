@@ -1,4 +1,4 @@
-#Build docker containers and push to AWS EKS 
+#Build docker containers and push to AWS ECR 
 resource "docker_registry_image" "puppet-server"{
     name = aws-pupper-server
     build {
@@ -46,24 +46,6 @@ resource "aws_db_subnet_group" "example" {
   }
 }
 
-
-
-# Build and push Docker images to AWS ECR
-resource "docker_registry_image" "puppet_server" {
-  name = "aws-puppet-server"
-  build {
-    context    = "../Step_1-Solution-Puppet-WA/"
-    dockerfile = "Dockerfile.puppetserver"
-  }
-}
-
-resource "docker_registry_image" "web_server" {
-  name = "aws-web-server"
-  build {
-    context    = "../Step_2-Solution-MariaDB-WordPress-WA/"
-    dockerfile = "Dockerfile.web01"
-  }
-}
 
 # Security Group for EC2
 resource "aws_security_group" "ec2_sg" {
