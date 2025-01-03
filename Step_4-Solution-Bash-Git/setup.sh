@@ -2,8 +2,8 @@
 
 # Variables
 AWS_REGION="us-east-1" 
-ECR_REPOSITORY="test_repo" # Replace with your ECR repository name
-IMAGE_TAG="latest" # Replace with your image tag if not 'latest'
+ECR_REPOSITORY="test_repo" 
+IMAGE_TAG="latest"
 S3_BUCKET="some_config_bucket"
 PUPPET_CONFIG_FILE="site.pp"
 CONTAINER_NAME="web01"
