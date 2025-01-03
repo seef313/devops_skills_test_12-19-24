@@ -9,3 +9,7 @@ To demonstrate this step, we can look at setup.sh as an example bash script cont
 
 The script will then get config files (site.pp) from an example bucket in s3, and parse its contents into AWS secrets manager for use in puppet. Container will then deploy with web01.  
 
+# How to use: 
+```
+./devops_skills_test_12-19-24/Step_4-Solution-Bash-Git/setup.sh
+```
